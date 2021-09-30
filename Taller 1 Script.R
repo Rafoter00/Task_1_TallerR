@@ -46,16 +46,16 @@ Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
 
 #Parte 3.1
 cabecera_caracteristcas=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Caracteristicas generales (Personas).rds") #Importo caracteristicas generales
-cabecera_desocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds")#Importo Desocupados
-cabecera_ocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")#Importo Ocupados 
-cabecera_fuerzalaboral=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds") #Importo Fuerza laboral
-cabecera_inactivos=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds") #Importo Fuerza laboral
+cabecera_desocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds") %>% mutate(desocupado=1)#Importo Desocupados
+cabecera_ocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")%>% mutate(ocupado=1)#Importo Ocupados 
+cabecera_fuerzalaboral=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds")%>% mutate(fl=1) #Importo Fuerza laboral
+cabecera_inactivos=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds")%>% mutate(inactivo=1) #Importo inactivos laboral
 
-geih = left_join(cabecera_caracteristcas,cabecera_desocupados,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_ocupados,c("secuencia_p","orden","directorio"),suffix=c("",""))  %>% left_join(.,cabecera_fuerzalaboral,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_inactivos,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% select("secuencia_p","orden","directorio","P6020","P6040","P6920","INGLABO","P6050","dpto","fex_c_2011","ESC","mes","dsi","Ft","ini","Oci")
+geih = left_join(cabecera_caracteristcas,cabecera_desocupados,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_ocupados,c("secuencia_p","orden","directorio"),suffix=c("",""))  %>% left_join(.,cabecera_fuerzalaboral,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_inactivos,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% select("secuencia_p","orden","directorio","P6020","P6040","P6920","INGLABO","P6050","dpto","fex_c_2011","ESC","mes","desocupado","fl","inactivo","ocupado")
 
 #Con la funcion de arriba se pegaron las 5 bases de datos de cabecera mediante los identificadores "secuencia_p","orden","directorio". 
 #Adicionalmente se dejaron las 8 variables de interes:"P6020","P6040","P6920","INGLABO","P6050","dpto","fex_c_2011","ESC","mes". 
-#Por ultimo se dejaron tambien variables internas de cada una de las bases de datos: FT=1(nos dice que el individuo pertenece a la fuerza laboral),INI=1(nos dice que el individuo es inactivo),Oci=1(Nos dice que el individuo es ocupado),dsi=1(nos dice que el individuo es desocupado). A partir de esto podemos hacer analisis
+#Por ultimo se dejaron tambien variables que permiten identificar: fl=1(nos dice que el individuo pertenece a la fuerza laboral),inactivo=1(nos dice que el individuo es inactivo),ocupado=1(Nos dice que el individuo es ocupado),descupado=1(nos dice que el individuo es desocupado).
 #Podemos utilizar estas variables para el punto 3.2 si nos basamos en teoria economica. Por ejemplo: si el inidivudo pertenece a la fuerza laboral, y no es inactivo, debe ser ocupado o desocupado
 
 #Parte 3.2
