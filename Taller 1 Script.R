@@ -1,4 +1,5 @@
 #Task 1 Taller R
+#Rafael Otero 201821640
 
 rm(list = ls())
 rm(list = ls()) # limpia el entorno de R
@@ -36,6 +37,28 @@ data_cultivos=data_cultivos %>% mutate(municipio = tolower(municipio))#Pongo en 
 
 #Pivot a formato long
 Pivotlong_datacultivos=data_cultivos %>% pivot_longer(!departamento:municipio,names_to="año",values_to="numero de hectareas")#Pivoteo unicamente los años dejando estatico el departamento y el municipio
+
+#Pregunta 3
+rm(list = ls()) # limpia el entorno de R
+if(!require(pacman)) install.packages("pacman") ; require(pacman) # Instalar la librería pacman
+p_load(rio,skimr,tidyverse,readxl,haven,WriteXLS) # Llamar y/o instalar las librerías de la clase
+Sys.setlocale("LC_CTYPE", "en_US.UTF-8") # Encoding UTF-8
+
+#Parte 3.1
+cabecera_caracteristcas=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Caracteristicas generales (Personas).rds") #Importo caracteristicas generales
+cabecera_desocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Desocupados.rds")#Importo Desocupados
+cabecera_ocupados=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Ocupados.rds")#Importo Ocupados 
+cabecera_fuerzalaboral=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Fuerza de trabajo.rds") #Importo Fuerza laboral
+cabecera_inactivos=import(file = "task_r_202102/task_1/data/input/2019/Cabecera - Inactivos.rds") #Importo Fuerza laboral
+
+geih = left_join(cabecera_caracteristcas,cabecera_desocupados,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_ocupados,c("secuencia_p","orden","directorio"),suffix=c("",""))  %>% left_join(.,cabecera_fuerzalaboral,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% left_join(.,cabecera_inactivos,c("secuencia_p","orden","directorio"),suffix=c("","")) %>% select("secuencia_p","orden","directorio","P6020","P6040","P6920","INGLABO","P6050","dpto","fex_c_2011","ESC","mes","dsi","Ft","ini","Oci")
+
+#Con la funcion de arriba se pegaron las 5 bases de datos de cabecera mediante los identificadores "secuencia_p","orden","directorio". 
+#Adicionalmente se dejaron las 8 variables de interes:"P6020","P6040","P6920","INGLABO","P6050","dpto","fex_c_2011","ESC","mes". 
+#Por ultimo se dejaron tambien variables internas de cada una de las bases de datos: FT=1(nos dice que el individuo pertenece a la fuerza laboral),INI=1(nos dice que el individuo es inactivo),Oci=1(Nos dice que el individuo es ocupado),dsi=1(nos dice que el individuo es desocupado). A partir de esto podemos hacer analisis
+#Podemos utilizar estas variables para el punto 3.2 si nos basamos en teoria economica. Por ejemplo: si el inidivudo pertenece a la fuerza laboral, y no es inactivo, debe ser ocupado o desocupado
+
+#Parte 3.2
 
 
 
