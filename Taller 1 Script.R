@@ -59,6 +59,9 @@ geih = left_join(cabecera_caracteristcas,cabecera_desocupados,c("secuencia_p","o
 #Podemos utilizar estas variables para el punto 3.2 si nos basamos en teoria economica. Por ejemplo: si el inidivudo pertenece a la fuerza laboral, y no es inactivo, debe ser ocupado o desocupado
 
 #Parte 3.2
-
-
+Total_ocupados_desocupado_edad= geih %>% group_by(P6040) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por edad
+Total_ocupados_desocupado_genero= geih %>% group_by(P6020) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por genero
+Total_ocupados_desocupado_ESC= geih %>% group_by(P6020,ESC) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por genero y años de escolaridad
+Ingreso_promedio_mediano_genero_edad= geih %>%  group_by(P6020,P6040)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE)) #Ingreso Promedio y mediano por sexo y edad
+Ingreso_promedio_mediano_genero_escolaridad= geih %>%  group_by(P6020,ESC)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE)) #Ingreso Promedio y mediano por sexo y años de escolaridad
 
