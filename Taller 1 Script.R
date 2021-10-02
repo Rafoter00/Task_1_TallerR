@@ -62,6 +62,38 @@ geih = left_join(cabecera_caracteristcas,cabecera_desocupados,c("secuencia_p","o
 Total_ocupados_desocupado_edad= geih %>% group_by(P6040) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por edad
 Total_ocupados_desocupado_genero= geih %>% group_by(P6020) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por genero
 Total_ocupados_desocupado_ESC= geih %>% group_by(P6020,ESC) %>% summarise(ocupado=table(ocupado),desocupado=table(desocupado))#Total de desocupados y ocupados por genero y años de escolaridad
-Ingreso_promedio_mediano_genero_edad= geih %>%  group_by(P6020,P6040)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE)) #Ingreso Promedio y mediano por sexo y edad
-Ingreso_promedio_mediano_genero_escolaridad= geih %>%  group_by(P6020,ESC)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE)) #Ingreso Promedio y mediano por sexo y años de escolaridad
+Ingreso_promedio_mediano_genero_edad= geih %>%  group_by(P6020,P6040)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE)) %>% drop_na(ingresos_promedio) %>% subset(ingresos_promedio>0) #Ingreso Promedio y mediano por sexo y edad
+Ingreso_promedio_mediano_genero_escolaridad= geih %>%  group_by(P6020,ESC)  %>% summarise(ingresos_promedio = mean(INGLABO, na.rm = TRUE),ingreso_mediano = median(INGLABO,na.rm= TRUE))%>% drop_na(ingresos_promedio) %>% subset(ingresos_promedio>0) #Ingreso Promedio y mediano por sexo y años de escolaridad
 
+if(!require(pacman)) install.packages("pacman") ; require(pacman) # Instalar la librería pacman
+p_load(tidyverse , rio , skimr , RColorBrewer , ggthemes , hrbrthemes , igraph) 
+
+graph1 = ggplot(Total_ocupados_desocupado_edad) + geom_point(aes(x=P6040,y=ocupado,col="red")) #Grafica de dispersion edad vs ocupados
+graph2 = ggplot(Total_ocupados_desocupado_edad) + geom_point(aes(x=P6040,y=desocupado)) #Grafica de dispersion edad vs desocupados
+genero<-cut(Ingreso_promedio_mediano_genero_edad$P6020,breaks=c(0,1,2),labels=c("mujer","hombre"))
+Ingreso_promedio_mediano_genero_edad$P6020=genero#Vuelvo variable P6020 categorica
+Genero<-cut(Ingreso_promedio_mediano_genero_escolaridad$P6020,breaks=c(0,1,2),labels=c("mujer","hombre"))
+Ingreso_promedio_mediano_genero_escolaridad$P6020=Genero #Vuelvo variable P6020 categorica
+graph3 = ggplot(Ingreso_promedio_mediano_genero_edad)+geom_point(aes(x=P6040,y=ingresos_promedio,color=genero)) #Grafica de dispersion edad vs Ingreso promedio discriminado por genero
+graph4 = ggplot(Ingreso_promedio_mediano_genero_escolaridad)+geom_point(aes(x=ESC,y=ingresos_promedio,color=Genero))+ theme_pander() + scale_colour_pander()#Grafica de dispersion años escolarid vs ingreso promedio discriminado por genero
+graph5 = ggplot(data = Ingreso_promedio_mediano_genero_escolaridad , aes(x = ESC , y =ingreso_mediano , fill = Genero)) + 
+  geom_bar(stat = "identity", position = "dodge") +  
+  geom_text(aes(label = ESC ),  
+            position=position_dodge(width=0.9),  
+            vjust=-0.25,
+            size = 3.5) +
+  scale_fill_brewer(palette = "Paired")+ 
+  labs(title = "Ingreso Mediano divido por Escolaridad",
+       caption = "Informacion obtenida de la GEIH",
+       x = "Años de escolaridad", 
+       y = "Ingreso Mediano", 
+       fill = "Genero") + theme_bw()
+#El ultimo comando es una graficos de barras que muestra el ingreso mediano segun los años de escolaridad discriminado por genero
+
+#Guardar
+ggsave(plot=graph1, file = "views/ejemplo1.jpeg")
+ggsave(plot=graph2, file = "views/ejemplo2.jpeg")
+ggsave(plot=graph3, file = "views/ejemplo3.jpeg")
+ggsave(plot=graph4, file = "views/ejemplo4.jpeg")
+ggsave(plot=graph5, file = "views/ejemplo5.jpeg")
+                                                                                                                               
